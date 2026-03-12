@@ -64,6 +64,11 @@ impl Graph {
 
     /// Drop a table by name.
     pub fn drop_table(&self, name: &str) -> Result<()> {
+        if name.is_empty() {
+            return Err(crate::error::Error::InvalidArgument(
+                "table name cannot be empty".into(),
+            ));
+        }
         self.execute_cypher(&format!("DROP TABLE {name}"))
     }
 

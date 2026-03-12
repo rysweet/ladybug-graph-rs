@@ -73,6 +73,11 @@ impl Graph {
     /// Find nodes matching a Cypher WHERE filter expression.
     ///
     /// The filter uses `n` as the variable name, e.g. `"n.age > 20"`.
+    ///
+    /// # Safety
+    ///
+    /// The `filter` string is interpolated directly into the Cypher query.
+    /// Never pass unsanitized user input as the filter.
     pub fn find_nodes(&self, table: &str, filter: &str) -> Result<Vec<Node>> {
         let cypher = format!("MATCH (n:{table}) WHERE {filter} RETURN n");
         let rows = self.query_raw(&cypher)?;

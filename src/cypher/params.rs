@@ -107,8 +107,8 @@ mod tests {
 
     #[test]
     fn literal_double() {
-        let s = property_to_cypher_literal(&Property::Double(3.14));
-        assert!(s.starts_with("3.14"));
+        let s = property_to_cypher_literal(&Property::Double(2.72));
+        assert!(s.starts_with("2.72"));
     }
 
     #[test]

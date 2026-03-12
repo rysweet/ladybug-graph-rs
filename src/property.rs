@@ -165,7 +165,7 @@ mod tests {
 
     #[test]
     fn as_f64_extracts() {
-        assert_eq!(Property::Double(3.14).as_f64(), Some(3.14));
+        assert_eq!(Property::Double(2.72).as_f64(), Some(2.72));
         assert_eq!(Property::Int64(1).as_f64(), None);
     }
 

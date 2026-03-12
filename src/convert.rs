@@ -67,6 +67,17 @@ pub fn value_to_property(value: &lbug::Value) -> Property {
     }
 }
 
+/// Infer the `lbug::LogicalType` from a `Property` variant.
+fn infer_logical_type(prop: &Property) -> lbug::LogicalType {
+    match prop {
+        Property::Bool(_) => lbug::LogicalType::Bool,
+        Property::Int64(_) => lbug::LogicalType::Int64,
+        Property::Double(_) => lbug::LogicalType::Double,
+        Property::String(_) => lbug::LogicalType::String,
+        _ => lbug::LogicalType::String,
+    }
+}
+
 /// Convert a `Property` to a `lbug::Value`.
 pub fn property_to_value(prop: &Property) -> lbug::Value {
     match prop {
@@ -77,7 +88,11 @@ pub fn property_to_value(prop: &Property) -> lbug::Value {
         Property::String(s) => lbug::Value::String(s.clone()),
         Property::List(items) => {
             let values: Vec<lbug::Value> = items.iter().map(property_to_value).collect();
-            lbug::Value::List(lbug::LogicalType::String, values)
+            let logical_type = items
+                .first()
+                .map(infer_logical_type)
+                .unwrap_or(lbug::LogicalType::String);
+            lbug::Value::List(logical_type, values)
         }
         Property::Map(_) => lbug::Value::String(format!("{:?}", prop)),
     }
@@ -206,8 +221,8 @@ mod tests {
     #[test]
     fn convert_double() {
         assert_eq!(
-            value_to_property(&lbug::Value::Double(3.14)),
-            Property::Double(3.14)
+            value_to_property(&lbug::Value::Double(2.72)),
+            Property::Double(2.72)
         );
     }
 

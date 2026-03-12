@@ -60,6 +60,9 @@ impl Graph {
     }
 
     /// Find shortest path between two nodes using variable-length relationships.
+    ///
+    /// Returns an empty `Vec` if no path exists within `max_hops` or if the
+    /// underlying engine does not support `shortestPath`.
     pub fn shortest_path(&self, from: NodeId, to: NodeId, max_hops: u32) -> Result<Vec<Node>> {
         let cypher = format!(
             "MATCH p = shortestPath((a)-[*1..{max_hops}]->(b)) \
@@ -67,24 +70,25 @@ impl Graph {
              RETURN nodes(p)",
             from.offset, to.offset
         );
-        match self.query_raw(&cypher) {
-            Ok(rows) => {
-                let mut nodes = Vec::new();
-                for row in &rows {
-                    for val in row {
-                        if let lbug::Value::List(_, items) = val {
-                            for item in items {
-                                if let Some(n) = convert::extract_node_from_value(item)? {
-                                    nodes.push(n);
-                                }
-                            }
+        let rows = match self.query_raw(&cypher) {
+            Ok(rows) => rows,
+            // shortestPath may not be supported by all LadybugDB versions
+            Err(crate::error::Error::Database(_)) => return Ok(Vec::new()),
+            Err(e) => return Err(e),
+        };
+        let mut nodes = Vec::new();
+        for row in &rows {
+            for val in row {
+                if let lbug::Value::List(_, items) = val {
+                    for item in items {
+                        if let Some(n) = convert::extract_node_from_value(item)? {
+                            nodes.push(n);
                         }
                     }
                 }
-                Ok(nodes)
             }
-            Err(_) => Ok(Vec::new()),
         }
+        Ok(nodes)
     }
 
     /// BFS-style traversal from a starting node up to max_depth.
