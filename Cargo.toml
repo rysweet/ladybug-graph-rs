@@ -1,0 +1,17 @@
+[package]
+name = "ladybug-graph-rs"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "High-level, ergonomic Rust wrapper for LadybugDB (embedded graph database)"
+repository = "https://github.com/rysweet/ladybug-graph-rs"
+keywords = ["graph", "database", "cypher", "embedded", "ladybug"]
+categories = ["database"]
+
+[dependencies]
+lbug = "0.15.1"
+thiserror = "2"
+
+[dev-dependencies]
+tempfile = "3"
+serial_test = "3"
