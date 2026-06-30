@@ -1,3 +1,6 @@
 /target/
+# Cargo.lock is committed for reproducible, audited builds (supply-chain
+# hardening); CI builds with --locked against it.
 *.lock
+!Cargo.lock
 
